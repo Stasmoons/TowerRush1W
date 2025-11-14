@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOWER RUSH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --padding: 20px;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #324f77 -5%, #0f0e1e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #121a31;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: var(--padding);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container-header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--padding);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            /* gap: 5%; */
+        }
+        
+        .logo-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 1000;
+        }
+
+        .logo {
+            margin-right: 7px;
+            width: 5vmax;
+            height: 5vmax;
+            background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%);
+            border: none;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px #ff990095;
+        }
+
+        .language-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%);
+            color: #1a1a2e;
+            box-shadow: 0 2px 8px rgba(255, 204, 0, 0.3);
+        }
+
+        .signal-container {
+            padding: 2vmax;
+            margin-bottom: 20px var(--padding);
+            border: 1px solid #3944629a;
+            background-color: #0e1527aa;
+            border-radius: 20px;
+        }
+        
+        .instruction {
+            background: #1a222de7;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 6vmax;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 5px 5px;
+            border: 1px solid #394462;
+            min-height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .instruction.visible {
+            opacity: 1;
+        }
+
+        .signal-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            margin-bottom: 20px;
+            padding: 10px;
+            gap: 1vh;
+            background: radial-gradient(#25355d, #070f1b);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 180px;
+        }
+        .signal-number {
+            color: #fbce58;
+            font-size: 8vh;
+            font-weight: 1000;
+            height: 8vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .signal-action {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .highlight-green {
+            color: #3ed093;
+            font-weight: 1000;
+        }
+
+        .btn {
+            background: linear-gradient(150deg, #ffcc00 0%, #ff9900 100%);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 1000;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.4);
+        }
+        
+        .btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .get-signal-button {
+            margin-bottom: 10px;
+        }
+
+        .note {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            font-size: 0.7rem;
+        }
+        
+        /* Анимация точек */
+        .dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="container-header">
+            <div class="header-left">
+                <div class="logo"></div>
+                <p class="logo-text">TOWER RUSH</p>
+            </div>
+            <div class="language-switcher">
+                <button class="lang-btn active" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </section>
+
+        <section class="signal-container">
+            <div id="instruction" class="instruction"></div>
+
+            <div class="signal-info">
+                <div class="signal-number" id="signalNumber"></div>
+                <div class="signal-action" id="signalAction">↓ Нажмите кнопку ↓</div>
+            </div>
+
+            <button class="btn get-signal-button" id="getSignalBtn">ПОЛУЧИТЬ СИГНАЛ</button>
+        
+            <div class="note">
+                Если вы сделали больше чем x2.5 от ставки,<br>
+                забирайте выигрыши. Даже если бот сказал<br>
+                ставить больше блоков.
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const getSignalBtn = document.getElementById('getSignalBtn');
+            const signalNumber = document.getElementById('signalNumber');
+            const signalAction = document.getElementById('signalAction');
+            const instruction = document.getElementById('instruction');
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            // Флаг для отслеживания первого нажатия
+            let isFirstClick = true;
+            let currentLang = 'ru';
+            
+            // Тексты для разных языков
+            const translations = {
+                ru: {
+                    signalActionInitial: '↓ Нажмите кнопку ↓',
+                    getSignalBtn: 'ПОЛУЧИТЬ СИГНАЛ',
+                    loading: 'Загрузка сигнала',
+                    signalLoading: 'Получение сигнала...',
+                    signalActionResult: 'Сколько блоков подряд поставить',
+                    note: `Если вы сделали больше чем x2.5 от ставки,<br>
+забирайте выигрыши. Даже если бот сказал<br>
+ставить больше блоков.`
+                },
+                en: {
+                    signalActionInitial: '↓ Press the button ↓',
+                    getSignalBtn: 'GET SIGNAL',
+                    loading: 'Loading signal',
+                    signalLoading: 'Getting signal...',
+                    signalActionResult: 'How many blocks to place in a row',
+                    note: `If you made more than x2.5 of the bet,<br>
+take your winnings. Even if the bot said<br>
+to place more blocks.`
+                }
+            };
+            
+            // Устанавливаем фиксированную высоту для элементов, чтобы не было скачков
+            const signalNumberHeight = signalNumber.offsetHeight;
+            const instructionHeight = instruction.offsetHeight;
+            
+            signalNumber.style.height = `${signalNumberHeight}px`;
+            instruction.style.height = `${instructionHeight}px`;
+            
+            // Обработчик переключения языка
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    if (lang === currentLang) return;
+                    
+                    // Обновляем активную кнопку
+                    langButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Меняем язык
+                    currentLang = lang;
+                    updateLanguage();
+                });
+            });
+            
+            // Функция обновления языка
+            function updateLanguage() {
+                const texts = translations[currentLang];
+                signalAction.textContent = texts.signalActionInitial;
+                getSignalBtn.textContent = texts.getSignalBtn;
+                document.querySelector('.note').innerHTML = texts.note;
+                
+                // Если инструкция уже была показана, обновляем её
+                if (instruction.classList.contains('visible')) {
+                    const currentNumber = signalNumber.textContent;
+                    if (currentNumber && currentNumber !== '3' && !signalNumber.classList.contains('dots')) {
+                        updateInstructionText(parseInt(currentNumber));
+                    }
+                }
+            }
+            
+            // Функция обновления текста инструкции
+            function updateInstructionText(number) {
+                let blockText;
+                if (currentLang === 'ru') {
+                    if (number === 1) {
+                        blockText = 'блок';
+                    } else if (number >= 2 && number <= 4) {
+                        blockText = 'блока';
+                    } else {
+                        blockText = 'блоков';
+                    }
+                    instruction.innerHTML = `<span class="highlight-green">OK</span> — Ставите ${number} ${blockText} подряд`;
+                } else {
+                    blockText = number === 1 ? 'block' : 'blocks';
+                    instruction.innerHTML = `<span class="highlight-green">OK</span> — Place ${number} ${blockText} in a row`;
+                }
+            }
+            
+            getSignalBtn.addEventListener('click', function() {
+                // Делаем кнопку недоступной
+                getSignalBtn.disabled = true;
+                getSignalBtn.textContent = translations[currentLang].loading;
+                getSignalBtn.classList.add('loading');
+                
+                // Показываем загрузку
+                signalNumber.textContent = '';
+                signalNumber.classList.add('dots');
+                signalAction.textContent = translations[currentLang].loading;
+                
+                // Если это первое нажатие, показываем инструкцию
+                if (isFirstClick) {
+                    instruction.innerHTML = translations[currentLang].signalLoading;
+                    instruction.classList.add('visible');
+                    isFirstClick = false;
+                } else {
+                    instruction.innerHTML = translations[currentLang].signalLoading;
+                }
+                
+                // Генерируем случайную задержку от 2 до 5 секунд
+                const randomDelay = Math.floor(Math.random() * 3000) + 2000;
+                
+                // Генерируем случайное число через случайную задержку
+                setTimeout(function() {
+                    // Генерируем случайное число от 1 до 10
+                    const randomNumber = Math.floor(Math.random() * 10) + 1;
+                    
+                    // Обновляем интерфейс
+                    signalNumber.classList.remove('dots');
+                    signalNumber.textContent = randomNumber;
+                    signalAction.textContent = translations[currentLang].signalActionResult;
+                    
+                    // Обновляем инструкцию
+                    updateInstructionText(randomNumber);
+                    
+                    // Восстанавливаем кнопку
+                    getSignalBtn.disabled = false;
+                    getSignalBtn.textContent = translations[currentLang].getSignalBtn;
+                    getSignalBtn.classList.remove('loading');
+                }, randomDelay);
+            });
+        });
+    </script>
+</body>
+</html>
